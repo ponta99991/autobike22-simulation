@@ -19,7 +19,7 @@ Simulink.sdi.clear %Clear simulink data inspector
 % 0.14m from ground to tread plate
 % 0.95m from tread plate to handle bar
 
-%% P(s) additional parameters
+%% additional parameters
 
 zeta = 0.6;
 d = 0.015; %Time delay
@@ -30,10 +30,15 @@ Ts=0.01;
 Tsm=Ts/6;
 
 % Control for transfer function
-Kp = 2.7;
-Ki = 0.2;
-Kd = 0.2;
-N = 100;
+%Starts with o=outer loop, i=inner loop
+oKp = 4;
+oKi = 0.2;
+oKd = 0.2;
+
+iKp = 5;
+iKi = 0;
+iKd = 1;
+N = 10;
 
 
 %% Test parameters
