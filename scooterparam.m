@@ -30,9 +30,9 @@ Ts=0.01;
 Tsm=Ts/6;
 
 % Control for transfer function
-Kp = 2.7;
+Kp = 2.6;
 Ki = 0.2;
-Kd = 0.2;
+Kd = 0.3;
 N = 100;
 
 
@@ -91,10 +91,103 @@ sys = tf((a*v/(h*b))*[1,v/a],[1,0,-gravity/h]); %G(s)
 %smlink_linksw %README before calling this(only if a model needs to be updated)
 %smimport('scootermodel'); %README before calling this(only if a model needs to be updated)
 
-%scooter translation and rotation from CAD
-scootermodel_DataFile 
-%run the simulation
-simOut = sim("scootermodelsim");
+% scootermodelsim
+
+min_function = 0;
+
+tic;
+
+if min_function == 0 %Run once
+
+    %model = 'scootermodelsim';
+    %load_system(model)
+
+    Kp = 2:0.1:3;
+
+    for i = length(Kp):-1:1
+        in(i) = Simulink.SimulationInput('scootermodelsim');
+        in(i) = in(i).setVariable('FeedTemp0',Kp(i));
+    end
+
+    out = parsim(in, 'ShowSimulationManager', 'on')
+
+    hello = out(10).steer_angle_CAD;
+
+%     %scooter translation and rotation from CAD
+%     scootermodel_DataFile 
+%     
+%     %run the simulation
+%     set_param('scootermodelsim','SimMechanicsOpenEditorOnUpdate','off');
+%     simOut = sim("scootermodelsim");
+    
+else
+    half_error_band = 0.03;
+    configuration = 1;
+    endt = 10*100; %times 100 is for simOut (1500)
+    startt = 1*100;
+    timeresolution = 0.1*100;
+    analyzetime = 3*100;
+    
+    settling_graph = zeros(((endt-startt)/timeresolution)+1,1);
+    
+    %PID optimization function
+    for Kp = 2.5:0.1:2.6
+        for Ki = 0.1:0.1:0.1
+            for Kd = 0.1:0.1:0.1
+                %scooter translation and rotation from CAD
+                scootermodel_DataFile 
+                
+                %run the simulation
+                set_param('scootermodelsim','SimMechanicsOpenEditorOnUpdate','off');
+                simOut = sim("scootermodelsim");
+    
+                count = 0;
+                for t = startt:timeresolution:endt
+                    %Pick discretised values in some time to describe settling
+                    %graph (steer angle graph with lower sampling freq.)
+                    count = count + 1;
+                    settling_graph(count,1) = simOut.steer_angle_CAD(t,1);
+                end
+    
+                for t = startt/10:timeresolution/10:(endt-analyzetime)/10
+                    %Check when (and if) the settling graph settles
+                    settled = 1;
+                    for move = 1:1:analyzetime/timeresolution
+                        if abs(settling_graph(t-(startt/10)+move,1)) > half_error_band
+                            settled = 0; %Not settled yet
+                        end
+                    end
+                    if settled == 1
+                        settling_time(configuration,1) = t/timeresolution; %The graph settled at time t
+                        settling_time(configuration,2) = Kp;
+                        settling_time(configuration,3) = Ki;
+                        settling_time(configuration,4) = Kd;
+                        break
+                    end
+                end
+    
+                if settled == 0 %The graph did not settle
+                    settling_time(configuration,1) = t/timeresolution; %"Max/worst settling time" (it is actually higher than t)
+                    settling_time(configuration,2) = Kp;
+                    settling_time(configuration,3) = Ki;
+                    settling_time(configuration,4) = Kd;
+                end
+    
+                configuration = configuration + 1;
+    
+            end
+        end
+    end
+    
+    [best_PID(1,1),best_PID_index] = min(settling_time(:,1));
+    best_PID(1,2:4) = settling_time(best_PID_index,2:4);
+    
+    % Settling time and its PID values as excel sheet
+    xlswrite('settling_time.xlsx',settling_time);
+
+end
+
+computing_time = toc;
 
 %% Additional plot for comparison between CAD/IMU and TF
 
