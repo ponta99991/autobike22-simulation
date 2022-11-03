@@ -3,6 +3,9 @@ clc
 
 Simulink.sdi.clear %Clear simulink data inspector
 
+%scooter translation and rotation from CAD
+scootermodel_DataFile;
+
 %% scooter  parameters(From chalmers bike)-----------------
     %inertia_front = 0.245;  %[kg.m^2] NOT SET, Needs to be calculated?
     r_wheel = 0.11;        % radius of the wheel
@@ -93,7 +96,7 @@ sys = tf((a*v/(h*b))*[1,v/a],[1,0,-gravity/h]); %G(s)
 
 % scootermodelsim
 
-min_function = 0;
+min_function = 1;
 
 tic;
 
@@ -101,26 +104,16 @@ if min_function == 0 %Run once
 
     %model = 'scootermodelsim';
     %load_system(model)
-
-    Kp = 2:0.1:3;
-
-    for i = length(Kp):-1:1
-        in(i) = Simulink.SimulationInput('scootermodelsim');
-        in(i) = in(i).setVariable('FeedTemp0',Kp(i));
-    end
-
-    out = parsim(in, 'ShowSimulationManager', 'on')
-
-    hello = out(10).steer_angle_CAD;
-
-%     %scooter translation and rotation from CAD
-%     scootermodel_DataFile 
-%     
-%     %run the simulation
-%     set_param('scootermodelsim','SimMechanicsOpenEditorOnUpdate','off');
-%     simOut = sim("scootermodelsim");
+    
+    %run the simulation
+    set_param('scootermodelsim','SimMechanicsOpenEditorOnUpdate','off');
+    simOut = sim("scootermodelsim");
     
 else
+    num_run = 0; %Simulation number
+    Kp = 2.5:0.1:2.6;
+    Ki = 0.1:0.1:0.1;
+    Kd = 0.1:0.1:0.1;
     half_error_band = 0.03;
     configuration = 1;
     endt = 10*100; %times 100 is for simOut (1500)
@@ -129,61 +122,80 @@ else
     analyzetime = 3*100;
     
     settling_graph = zeros(((endt-startt)/timeresolution)+1,1);
-    
-    %PID optimization function
-    for Kp = 2.5:0.1:2.6
-        for Ki = 0.1:0.1:0.1
-            for Kd = 0.1:0.1:0.1
-                %scooter translation and rotation from CAD
-                scootermodel_DataFile 
-                
-                %run the simulation
-                set_param('scootermodelsim','SimMechanicsOpenEditorOnUpdate','off');
-                simOut = sim("scootermodelsim");
-    
-                count = 0;
-                for t = startt:timeresolution:endt
-                    %Pick discretised values in some time to describe settling
-                    %graph (steer angle graph with lower sampling freq.)
-                    count = count + 1;
-                    settling_graph(count,1) = simOut.steer_angle_CAD(t,1);
-                end
-    
-                for t = startt/10:timeresolution/10:(endt-analyzetime)/10
-                    %Check when (and if) the settling graph settles
-                    settled = 1;
-                    for move = 1:1:analyzetime/timeresolution
-                        if abs(settling_graph(t-(startt/10)+move,1)) > half_error_band
-                            settled = 0; %Not settled yet
-                        end
-                    end
-                    if settled == 1
-                        settling_time(configuration,1) = t/timeresolution; %The graph settled at time t
-                        settling_time(configuration,2) = Kp;
-                        settling_time(configuration,3) = Ki;
-                        settling_time(configuration,4) = Kd;
-                        break
-                    end
-                end
-    
-                if settled == 0 %The graph did not settle
-                    settling_time(configuration,1) = t/timeresolution; %"Max/worst settling time" (it is actually higher than t)
-                    settling_time(configuration,2) = Kp;
-                    settling_time(configuration,3) = Ki;
-                    settling_time(configuration,4) = Kd;
-                end
-    
-                configuration = configuration + 1;
-    
+
+    %run the simulation
+    parpool(6) %Open pool of specific size
+    for iP = 1:1:length(Kp)
+        for iI = 1:1:length(Ki)
+            for iD = 1:1:length(Kd)
+                num_run = num_run + 1; %One more simulation run
+                in(num_run) = Simulink.SimulationInput('scootermodelsim');
+                Kpr = Kp(iP);
+                Kin = Ki(iI);
+                Kde = Kd(iD);
+                in(num_run) = setVariable(in(num_run),'Kp',Kpr);
+                in(num_run) = setVariable(in(num_run),'Ki',Kin);
+                in(num_run) = setVariable(in(num_run),'Kd',Kde);
             end
         end
     end
+    out = parsim(in, 'ShowSimulationManager', 'on', 'TransferBaseWorkspaceVariables', 'on')
+
+    delete(gcp('nocreate'));
+
+    %PID optimization function
+
+%     for run = 1:1:num_run
+%         
+%     end
     
-    [best_PID(1,1),best_PID_index] = min(settling_time(:,1));
-    best_PID(1,2:4) = settling_time(best_PID_index,2:4);
-    
-    % Settling time and its PID values as excel sheet
-    xlswrite('settling_time.xlsx',settling_time);
+%     %PID optimization function
+%     for P = Kp
+%         for I = Ki
+%             for D = Kd
+%                 count = 0;
+%                 for t = startt:timeresolution:endt
+%                     %Pick discretised values in some time to describe settling
+%                     %graph (steer angle graph with lower sampling freq.)
+%                     count = count + 1;
+%                     settling_graph(count,1) = out.steer_angle_CAD(t,1);
+%                 end
+%     
+%                 for t = startt/10:timeresolution/10:(endt-analyzetime)/10
+%                     %Check when (and if) the settling graph settles
+%                     settled = 1;
+%                     for move = 1:1:analyzetime/timeresolution
+%                         if abs(settling_graph(t-(startt/10)+move,1)) > half_error_band
+%                             settled = 0; %Not settled yet
+%                         end
+%                     end
+%                     if settled == 1
+%                         settling_time(configuration,1) = t/timeresolution; %The graph settled at time t
+%                         settling_time(configuration,2) = Kp;
+%                         settling_time(configuration,3) = Ki;
+%                         settling_time(configuration,4) = Kd;
+%                         break
+%                     end
+%                 end
+%     
+%                 if settled == 0 %The graph did not settle
+%                     settling_time(configuration,1) = t/timeresolution; %"Max/worst settling time" (it is actually higher than t)
+%                     settling_time(configuration,2) = Kp;
+%                     settling_time(configuration,3) = Ki;
+%                     settling_time(configuration,4) = Kd;
+%                 end
+%     
+%                 configuration = configuration + 1;
+%     
+%             end
+%         end
+%     end
+%     
+%     [best_PID(1,1),best_PID_index] = min(settling_time(:,1));
+%     best_PID(1,2:4) = settling_time(best_PID_index,2:4);
+%     
+%     % Settling time and its PID values as excel sheet
+%     xlswrite('settling_time.xlsx',settling_time);
 
 end
 
