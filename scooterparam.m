@@ -6,6 +6,8 @@ Simulink.sdi.clear %Clear simulink data inspector
 %scooter translation and rotation from CAD
 scootermodel_DataFile;
 
+scootermodelsim
+
 %% scooter  parameters(From chalmers bike)-----------------
     %inertia_front = 0.245;  %[kg.m^2] NOT SET, Needs to be calculated?
     r_wheel = 0.11;        % radius of the wheel
@@ -136,7 +138,7 @@ else
             end
         end
     end
-    out = parsim(in, 'ShowSimulationManager', 'on', 'TransferBaseWorkspaceVariables', 'on')
+    simOut = parsim(in, 'ShowSimulationManager', 'on', 'TransferBaseWorkspaceVariables', 'on')
 
     delete(gcp('nocreate'));
 
