@@ -96,7 +96,9 @@ sys = tf((a*v/(h*b))*[1,v/a],[1,0,-gravity/h]); %G(s)
 
 % scootermodelsim
 
-min_function = 1; %0 = normal use, 1 = PID settling time optimization results
+endt = 10*100; %times 100 is for simOut (1500)
+
+min_function = 0; %0 = normal use, 1 = PID settling time optimization results
 
 tic;
 
@@ -114,9 +116,7 @@ else
     Kp = 2.5:0.1:2.8;
     Ki = 0.1:0.1:0.3;
     Kd = 0.1:0.1:0.3;
-    half_error_band = 0.03;
-    %configuration = 1;
-    endt = 10*100; %times 100 is for simOut (1500)
+    half_error_band = 0.01;
     startt = 1*100;
     timeresolution = 0.1*100;
     analyzetime = 3*100;
