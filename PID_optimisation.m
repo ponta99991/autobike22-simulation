@@ -1,4 +1,11 @@
-scootermodelsim
+if(isfile("appconfig.mat"))
+    load("appconfig.mat");
+else
+    simulationtime=10;
+end
+
+scootermodelsim;
+endt = simulationtime*100; %times 100 is for simOut (1500)
 num_run = 0; %Simulation number
 sample = 0.1; %PID sample distance
 outer_p = 4:sample:4;
@@ -52,10 +59,7 @@ else %Two PIDs parallel model
     end
 end
 
-simOut = parsim(in, 'ShowSimulationManager', 'on', 'TransferBaseWorkspaceVariables', 'on')
-% set_param('scootermodelsim','SimMechanicsOpenEditorOnUpdate','off');
-% simOut = sim("scootermodelsim");
-
+simOut = parsim(in, 'ShowSimulationManager', 'off', 'TransferBaseWorkspaceVariables', 'on')
 delete(gcp('nocreate'));
 
 %PID optimization function
@@ -152,3 +156,5 @@ else %Two PIDs settling time
     [best_PID(1,1),best_PID_index] = min(settling_time(:,1));
     best_PID(1,2:7) = settling_time(best_PID_index,2:7);
 end
+bestgraph=simOut(1,best_PID_index);
+save("best_PID.mat","best_PID","bestgraph");
