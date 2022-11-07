@@ -18,7 +18,7 @@ scootermodel_DataFile;
 %% additional parameters
 
 PIDswitch=0; %0 for 1 and 1 for 2 PIDs
-Pidopton = 0; %0 = normal use, 1 = PID settling time optimization results
+Pidopton = 1; %0 = normal use, 1 = PID settling time optimization results
 
 zeta = 0.6;
 d = 0.015; %Time delay
