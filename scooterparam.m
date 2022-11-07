@@ -18,7 +18,7 @@ scootermodel_DataFile;
 %% additional parameters
 
 PIDswitch=0; %0 for 1 and 1 for 2 PIDs
-Pidopton = 1; %0 = normal use, 1 = PID settling time optimization results
+Pidopton = 0; %0 = normal use, 1 = PID settling time optimization results
 
 zeta = 0.6;
 d = 0.015; %Time delay
@@ -36,9 +36,9 @@ outer_p = 4;
 outer_i = 0.2;
 outer_d = 0.2;
 
-inner_p = 100;
-inner_i = 100;
-inner_d = 100;
+inner_p = 5;
+inner_i = 0;
+inner_d = 0.1;
 N = 10;
 
 
@@ -86,8 +86,6 @@ dropheight=20; %cm
 
 %smlink_linksw %README before calling this(only if a model needs to be updated)
 %smimport('scootermodel'); %README before calling this(only if a model needs to be updated)
-
-endt = simulationtime*100; %times 100 is for simOut (1500)
 
 tic;
 

@@ -1,4 +1,6 @@
-scootermodelsim
+    load("appconfig.mat");
+    scootermodelsim;
+    endt = simulationtime*100; %times 100 is for simOut (1500)
     num_run = 0; %Simulation number
     outer_p = 2.5:0.1:2.5;
     outer_i = 0.1:0.1:0.1;
@@ -73,3 +75,4 @@ scootermodelsim
 
     [best_PID(1,1),best_PID_index] = min(settling_time(:,1));
     best_PID(1,2:4) = settling_time(best_PID_index,2:4);
+    save("best_PID.mat","best_PID");
