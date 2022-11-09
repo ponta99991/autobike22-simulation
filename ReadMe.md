@@ -100,6 +100,19 @@ smiData.RevoluteJoint(3).Rz.Pos = 0;
 
 smiData.RevoluteJoint(3).ID = "[Handle-1:-:wheel-2]";
 
+### Pid optimisation
+
+If using PID optimisation, please have a look at PID_optimisation.m, under "Init".
+- By changing outer_x and inner_x, PID combinations will be changed. For example, outer_p = 3.1:0.1:3.5 will test 3.1, 3.2, 3.3, and 3.4, in combination with all possible other values specified.
+    CAUTION: Adding values will increase operations quickly. For example, if using 10 values for each of the 6 PID variables of two PIDs, there will be 1 000 000 calculations. If each 6 in parallel operation takes 18 seconds on average, the execution time will be about one month.
+- half_error_band, startt, endt, timeresolution, analysetime are all for assessing stability of the PID value combinations, by looking at settling time.
+
+The PID optimisation script will first run simulations as specified in GUI (one or two PIDs) and in "Init" section (PID combinations). Then, it will calculate settling time for these.
+
+The GUI graphs will display 1s as 100 samples, this is because the lowest sampling rate is 1/Ts Hz (outer PID, which should have higher or equal sampling rate to inner). The best PID values will be shown under "Config". If there is no settled system within time = endtime-analysetime, then the graphs will display 'No asymptotically stable system found' and best PID values will be set to 0.
+
+The best PID settling time and combination will be saved as "best_PID.mat" and the settling time of each PID combination as "settling_time.mat". The first column of these displays settling time(s) and the following columns PID values in order outer_p to inner_d. The simulation outputs used for calculating settling times will be saved as "simOut.mat". Each row of "settling_time.mat" correspond to each column of "simOut.mat".
+
 ### Setup the e-scooter
 
 The scooter has a individual block that takes frame and contact points as inputs and outputs the new frame. 
