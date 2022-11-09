@@ -90,7 +90,7 @@ Also in scooterparam.m there exist some extra tweakable variables that could be 
 
 [CHANGELOG 2022-11-08]
 
-Remove the comment at the bottom under the line "%Run Simulation------------" section to be able to run simulation from "scooterparam.m"
+Remove the comment at the bottom under the line "%Run the simulation" section to be able to run simulation from "scooterparam.m"
 Run scooterparam.m to start simulation.
 
 ***NOTE: Recommended to try the [GUI](#gui-startup) first and understand it before altering other variables***
