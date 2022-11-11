@@ -4,7 +4,7 @@ if(isfile("appconfig.mat"))
     load("appconfig.mat");                                                  %Load variables if not
 end
 
-scootermodelsim;
+%scootermodelsim;
 num_run = 0;                                                                %Simulation number
 %Change these if using PID optimization, note that combinations easily can
 %increase, and thus computation time. ---

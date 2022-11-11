@@ -5,6 +5,7 @@ Simulink.sdi.clear                                                          %Cle
 
 scootermodel_DataFile;                                                      %Scooter translation and rotation from CAD
 
+scootermodelsim;
 
 %% Scooter parameters (From chalmers bike)
 
