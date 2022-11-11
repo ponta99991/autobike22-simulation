@@ -11,12 +11,12 @@ num_run = 0;                                                                %Sim
 %PID sample distance
 sample = 0.1;
 %Outer PID sweep settings
-outer_p = 3.8:sample:4.1;
-outer_i = 0.2:sample:0.2;
+outer_p = 3.9:sample:4;
+outer_i = 0.1:sample:0.2;
 outer_d = 0.2:sample:0.2;
 %Inner PID sweep settings
-inner_p = 4.5:sample:5.1;
-inner_i = 0:sample:0;
+inner_p = 4.9:sample:5;
+inner_i = 0.1:sample:0.1;
 inner_d = 1:sample:1;
 %---
 half_error_band = 0.003;                                                    %Stabilisation definition (settled when the angle is within error band)

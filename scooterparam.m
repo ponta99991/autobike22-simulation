@@ -42,7 +42,7 @@ N = 100;                                                                    %Fil
 %% Test parameters
 
 %Disturbance
-pushamp=5;                                                                  %Push magnitude
+pushamp=5;                                                                  %Push moment [Nm]
 phase=2;                                                                    %Time for push [s]
 
 %Standard friction values on back and front wheel in static and dynamic
