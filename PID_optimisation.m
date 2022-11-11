@@ -11,7 +11,7 @@ num_run = 0;                                                                %Sim
 %PID sample distance
 sample = 0.1;
 %Outer PID sweep settings
-outer_p = 3.9:sample:4;
+outer_p = 4:sample:4.2;
 outer_i = 0.1:sample:0.2;
 outer_d = 0.2:sample:0.2;
 %Inner PID sweep settings
@@ -22,7 +22,7 @@ inner_d = 1:sample:1;
 half_error_band = 0.003;                                                    %Stabilisation definition (settled when the angle is within error band)
 startt = 2*(1/Ts);                                                          %Start time for settling time search (do not put lower than 1/Ts = 1s for this version)
 endt = simulationtime*(1/Ts);                                               %Times 1/Ts = 100 is for simOut (1500 samples = 15s)
-timeresolution = 0.1*(1/Ts);                                                %Settling graph sampling time for settling assessment
+timeresolution = 0.01*(1/Ts);                                               %Settling graph sampling time for settling assessment
 analysetime = 3*(1/Ts);                                                     %Time window for settling assessment, if stable within [t,t+analysetime] then t is considered settling time
 
 settling_graph = zeros(((endt-startt)/timeresolution)+1,1);                 %Init
@@ -80,7 +80,7 @@ end
 set_param('scootermodelsim','SimMechanicsOpenEditorOnUpdate','off');        %If turned on, scooter 3D model will run for all PID combinations (not recommended)
 save_system('scootermodelsim');                                             %Simulation needs to be saved before parallel
 %Output of all combinations chosen
-simOut = parsim(in, 'ShowSimulationManager', 'off', 'TransferBaseWorkspaceVariables', 'on')
+simOut = parsim(in, 'ShowSimulationManager', 'off', 'TransferBaseWorkspaceVariables', 'on');
 delete(gcp('nocreate'));                                                    %Quit parallel functionality
 
 %% PID optimization function
@@ -114,7 +114,7 @@ if PIDswitch == 0
                     end
                     if settled == 1
                         %The graph settled at time t
-                        settling_time(num_run,1) = t/timeresolution;
+                        settling_time(num_run,1) = t*timeresolution*0.01;
                         break
                     end
                 end
@@ -166,7 +166,7 @@ else
                                 end
                                 if settled == 1
                                     %The graph settled at time t
-                                    settling_time(num_run,1) = t/timeresolution;
+                                    settling_time(num_run,1) = t*timeresolution*0.01;
                                     break
                                 end
                             end
