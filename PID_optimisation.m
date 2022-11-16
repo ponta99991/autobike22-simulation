@@ -1,5 +1,7 @@
 %% Init
 
+tic
+
 if(isfile("appconfig.mat"))
     load("appconfig.mat");                                                  %Load variables if not
 end
@@ -11,13 +13,13 @@ num_run = 0;                                                                %Sim
 %PID sample distance
 sample = 0.1;
 %Outer PID sweep settings
-outer_p = 4:sample:4.2;
-outer_i = 0.1:sample:0.2;
-outer_d = 0.2:sample:0.2;
+outer_p = 0.5:0.5:5;
+outer_i = 0:0.3:1.8;
+outer_d = 0:0.3:1.5;
 %Inner PID sweep settings
-inner_p = 4.9:sample:5;
-inner_i = 0.1:sample:0.1;
-inner_d = 1:sample:1;
+inner_p = 0.5:0.5:6;
+inner_i = 0:0.5:1;
+inner_d = 0:0.5:1;
 %---
 half_error_band = 0.003;                                                    %Stabilisation definition (settled when the angle is within error band)
 startt = 2*(1/Ts);                                                          %Start time for settling time search (do not put lower than 1/Ts = 1s for this version)
@@ -83,6 +85,16 @@ save_system('scootermodelsim');                                             %Sim
 simOut = parsim(in, 'ShowSimulationManager', 'off', 'TransferBaseWorkspaceVariables', 'on');
 delete(gcp('nocreate'));                                                    %Quit parallel functionality
 
+%save("simOut.mat","simOut");
+
+for i = 1:1:num_run
+    simOutSmall(1,i).roll_angle_CAD = simOut(1,i).roll_angle_CAD;
+    simOutSmall(1,i).steer_angle_CAD = simOut(1,i).steer_angle_CAD;
+end
+
+save("simOut.mat","simOutSmall");
+load("simOut.mat");
+
 %% PID optimization function
 
 %One PID settling time
@@ -99,7 +111,7 @@ if PIDswitch == 0
                     %Pick discretised values to describe settling graph
                     %(steer angle graph with lower sampling freq.)
                     count = count + 1;
-                    settling_graph(count,1) = simOut(1,num_run).roll_angle_CAD(t,1);
+                    settling_graph(count,1) = simOutSmall(num_run).roll_angle_CAD(t,1);
                 end
     
                 for t = startt/timeresolution:1:(endt-analysetime)/timeresolution
@@ -151,7 +163,7 @@ else
                                 %Pick discretised values in some time to describe settling
                                 %graph (steer angle graph with lower sampling freq.)
                                 count = count + 1;
-                                settling_graph(count,1) = simOut(1,num_run).roll_angle_CAD(t,1);
+                                settling_graph(count,1) = simOutSmall(num_run).roll_angle_CAD(t,1);
                             end
                 
                             for t = startt/timeresolution:1:(endt-analysetime)/timeresolution
@@ -195,9 +207,11 @@ end
 
 %Best graph used for plot in GUI. If no plot stabilises during specified
 %time (simulationtime-(analyzetime/(1/Ts))), no graph will be plotted
-bestgraph=simOut(1,best_PID_index);
+bestgraph=simOutSmall(best_PID_index);
 save("best_PID.mat","best_PID","bestgraph");
 
 %Save PID combinations characteristics
-save("simOut.mat","simOut");
+%save("simOut.mat","simOutSmall");
 save("settling_time.mat","settling_time");
+
+Worktime = toc;

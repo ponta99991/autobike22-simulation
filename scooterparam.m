@@ -27,7 +27,7 @@ v = 8;                                                                      %Vel
 Ts=0.01;                                                                    %Outer PID [s]
 Tsm=Ts/6;                                                                   %Inner PID [s]
 
-simulationtime=10;                                                          %Scooter simulation time (Simulink)
+simulationtime=8;                                                           %Scooter simulation time (Simulink)
 
 %PID settings if running once (not using PID optimization calculation)
 outer_p = 4;                                                                %Outer
