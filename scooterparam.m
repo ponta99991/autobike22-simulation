@@ -5,6 +5,7 @@ Simulink.sdi.clear                                                          %Cle
 
 scooter_DataFile;                                                      %Scooter translation and rotation from CAD
 
+scootermodelsim;
 
 %% Scooter parameters (From chalmers bike)
 
@@ -26,7 +27,7 @@ v = 8;                                                                      %Vel
 Ts=0.01;                                                                    %Outer PID [s]
 Tsm=Ts/6;                                                                   %Inner PID [s]
 
-simulationtime=10;                                                          %Scooter simulation time (Simulink)
+simulationtime=8;                                                           %Scooter simulation time (Simulink)
 
 %PID settings if running once (not using PID optimization calculation)
 outer_p = 4;                                                                %Outer
@@ -42,7 +43,7 @@ N = 100;                                                                    %Fil
 %% Test parameters
 
 %Disturbance
-pushamp=5;                                                                  %Push magnitude
+pushamp=5;                                                                  %Push moment [Nm]
 phase=2;                                                                    %Time for push [s]
 
 %Standard friction values on back and front wheel in static and dynamic
