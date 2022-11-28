@@ -3,7 +3,7 @@ clc
 
 Simulink.sdi.clear                                                          %Clear simulink data inspector
 
-scootermodel_DataFile;                                                      %Scooter translation and rotation from CAD
+scooter_DataFile;                                                      %Scooter translation and rotation from CAD
 
 
 %% Scooter parameters (From chalmers bike)
@@ -30,8 +30,8 @@ simulationtime=10;                                                          %Sco
 
 %PID settings if running once (not using PID optimization calculation)
 outer_p = 4;                                                                %Outer
-outer_i = 0.2;
-outer_d = 0.2;
+outer_i = 0.1;
+outer_d = 0.1;
 inner_p = 5;                                                                %Inner
 inner_i = 0;
 inner_d = 0.1;
@@ -82,7 +82,7 @@ initvelocity = v/(r_wheel*3.6);                                             %[ra
 
 %The scooter is not aligned at plane height such 20 cm dropheight is used
 %to have it over, future work to allign them better
-dropheight = r_wheel + 0.1;                                                 %[m]
+dropheight = r_wheel + 0.14;                                                 %[m]
 
 %smlink_linksw                                                              %README before calling this (only if a model needs to be updated)
 %smimport('scootermodel');                                                  %README before calling this (only if a model needs to be updated)
