@@ -181,3 +181,8 @@ Thus the Simulation has a work flow like:
 - current steering angle and tilt angle->PID->scooter
 - World-> scooter
 - scooter->Sense tilt angle and velocity
+
+### TF ref
+
+https://lucris.lub.lu.se/ws/portalfiles/portal/4692388/625565.pdf
+https://ieeexplore.ieee.org/document/9655223

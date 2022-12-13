@@ -3,7 +3,7 @@ clc
 
 Simulink.sdi.clear                                                          %Clear simulink data inspector
 
-scooter_DataFile;                                                      %Scooter translation and rotation from CAD
+scooter_DataFile;                                                           %Scooter translation and rotation from CAD
 
 scootermodelsim;
 
@@ -19,8 +19,10 @@ a = 0.515;                                                                  %Dis
 PIDswitch=0;                                                                %0 for 1 and 1 for 2 PIDs
 Pidopton = 0;                                                               %0 = normal use, 1 = PID settling time optimization results
 
-zeta = 0.6;                                                                 %Constant found via testing (IEEE 9655223)
-d = 0.015;                                                                  %Time delay [s]
+%Variables for TF H(s) IEEE 9655223, not used
+%zeta = 0.6;                                                                 %Constant found via testing (IEEE 9655223)
+%d = 0.015;                                                                  %Time delay [s]
+
 v = 8;                                                                      %Velocity [km/h] (model assumes constant velocity)
 
 %Different sample rates
@@ -30,12 +32,12 @@ Tsm=Ts/6;                                                                   %Inn
 simulationtime=8;                                                           %Scooter simulation time (Simulink)
 
 %PID settings if running once (not using PID optimization calculation)
-outer_p = 4;                                                                %Outer
-outer_i = 0.1;
-outer_d = 0.1;
-inner_p = 5;                                                                %Inner
+outer_p = 7;                                                                %Outer
+outer_i = 0.5;
+outer_d = 0;
+inner_p = 0.8;                                                              %Inner
 inner_i = 0;
-inner_d = 0.1;
+inner_d = 0;
 
 N = 100;                                                                    %Filter coefficient, always constant
 
@@ -83,7 +85,7 @@ initvelocity = v/(r_wheel*3.6);                                             %[ra
 
 %The scooter is not aligned at plane height such 20 cm dropheight is used
 %to have it over, future work to allign them better
-dropheight = r_wheel + 0.14;                                                 %[m]
+dropheight = r_wheel + 0.14;                                                %[m]
 
 %smlink_linksw                                                              %README before calling this (only if a model needs to be updated)
 %smimport('scootermodel');                                                  %README before calling this (only if a model needs to be updated)
@@ -95,4 +97,8 @@ dropheight = r_wheel + 0.14;                                                 %[m
 % simOut = sim("scootermodelsim");
     
 %PID_optimisation
+
+%% TF
+
+sysG = tf((a*(v*3.6)/(b*h))*[1,(v*3.6)/a],[1,0,gravity/h]);                 %G(s) bicycle model (Lund/Niklas)
 
