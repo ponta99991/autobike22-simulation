@@ -100,5 +100,4 @@ dropheight = r_wheel + 0.14;                                                %[m]
 
 %% TF
 
-sysG = tf((a*(v*3.6)/(b*h))*[1,(v*3.6)/a],[1,0,gravity/h]);                 %G(s) bicycle model (Lund/Niklas)
-
+sysG = tf((a*(v/3.6)/(b*h))*[1,(v/3.6)/a],[1,0,gravity/h]);                 %G(s) bicycle model (Lund/Niklas)
