@@ -20,8 +20,8 @@ PIDswitch=0;                                                                %0 f
 Pidopton = 0;                                                               %0 = normal use, 1 = PID settling time optimization results
 
 %Variables for TF H(s) IEEE 9655223, not used
-%zeta = 0.6;                                                                 %Constant found via testing (IEEE 9655223)
-%d = 0.015;                                                                  %Time delay [s]
+%zeta = 0.6;                                                                %Constant found via testing (IEEE 9655223)
+%d = 0.015;                                                                 %Time delay [s]
 
 v = 8;                                                                      %Velocity [km/h] (model assumes constant velocity)
 
@@ -32,12 +32,12 @@ Tsm=Ts/6;                                                                   %Inn
 simulationtime=8;                                                           %Scooter simulation time (Simulink)
 
 %PID settings if running once (not using PID optimization calculation)
-outer_p = 7;                                                                %Outer
-outer_i = 0.5;
-outer_d = 0;
-inner_p = 0.8;                                                              %Inner
+outer_p = 4;                                                                %Outer
+outer_i = 0.1;
+outer_d = 0.1;
+inner_p = 5;                                                                %Inner
 inner_i = 0;
-inner_d = 0;
+inner_d = 1;
 
 N = 100;                                                                    %Filter coefficient, always constant
 
